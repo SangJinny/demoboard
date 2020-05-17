@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 상세</title>
+    <link rel="stylesheet" th:href="@{/style.css}"/>
+</head>
+<body>
+<div class="container">
+    <h2>게시글 상세</h2>
+    <form id="frm" method="post">
+        <table class="post_detail">
+            <colgroup>
+                <col width="15%"/>
+                <col width="35%"/>
+                <col width="15%"/>
+                <col width="35%"/>
+            </colgroup>
+            <caption>게시글 상세내용</caption>
+            <tbody>
+            <tr>
+                <th scope="row">글 번호</th>
+                <td th:text="${post.id }"></td>
+                <th scope="row">조회수</th>
+                <td th:text="${post.id }"></td>
+            </tr>
+            <tr>
+                <th scope="row">작성자</th>
+                <td th:text="${post.writer }"></td>
+                <th scope="row">작성일</th>
+                <td th:text="${post.createdAt }"></td>
+            </tr>
+            <tr>
+                <th scope="row">제목</th>
+                <td colspan="3"><input type="text" id="postTitle" name="title" th:value="${post.title }"/></td>
+            </tr>
+            <tr>
+                <td colspan="4" class="view_text">
+                    <textarea title="내용" id="postContent" name="content" th:text="${post.content }"></textarea>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <input type="hidden" id="postId" name="id" th:value="${post.id }">
+    </form>
+
+    <a href= "/posts/" th:attrappend="href=${post.id}" id="editButton" class="btn">수정하기</a>
+    <a href = "/posts" id="deleteButton" class="btn">삭제하기</a>
+    <a href="/posts" id="listButton" class="btn">목록으로</a>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("#editButton").on("click", function(){
+            var frm = $("#frm")[0];
+            var id = $("#postId").val();
+            var title = $("#postTitle").val();
+            var content = $("#postContent").val();
+            $.ajax({
+                type: "PUT",
+                url: "/posts/"+id,
+                data: {
+                    title: title,
+                    content: content
+                }
+            });
+        });
+
+        $("#deleteButton").on("click", function(){
+            var frm = $("#frm")[0];
+            var id = $("#postId").val();
+            $.ajax({
+                type: "DELETE",
+                url: "/posts/"+id,
+                data: {
+                    title: title,
+                    content: content
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
