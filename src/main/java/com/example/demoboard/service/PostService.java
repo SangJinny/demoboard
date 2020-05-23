@@ -1,5 +1,6 @@
 package com.example.demoboard.service;
 
+import com.example.demoboard.exception.DemoBoardException;
 import com.example.demoboard.model.Post;
 import com.example.demoboard.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,8 @@ public class PostService {
     }
 
     public Post getPostById(long id) {
-        return postRepository.findById(id).orElseThrow(RuntimeException::new);
+        return postRepository.findById(id)
+                .orElseThrow( () -> new DemoBoardException("Post is not found"));
     }
 
     public List<Post> getAllPosts() {
@@ -38,7 +40,7 @@ public class PostService {
     }
 
     public Post updatePost(long id, String title, String content) {
-        Post post = postRepository.findById(id).orElseThrow(RuntimeException::new);
+        Post post = postRepository.findById(id).orElseThrow(() -> new DemoBoardException("Post is not found"));
         post.setTitle(title);
         post.setContent(content);
         return postRepository.save(post);
