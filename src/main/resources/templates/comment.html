@@ -7,13 +7,9 @@
 </head>
 <body>
 <div class="container">
-    <h2>게시글 등록</h2>
-    <form id="frm" name="frm" method="post" action="/posts">
+    <h2>댓 등록</h2>
+    <form id="frm" name="frm" method="post" th:action="@{|/posts/${postId}/comments|}">
         <table class="board_detail">
-            <tr>
-                <td>제목</td>
-                <td><input type="text" id="title" name="title"/></td>
-            </tr>
             <tr>
                 <td>작성자</td>
                 <td><input type="text" id="writer" name="writer"/></td>
@@ -25,6 +21,7 @@
                 </td>
             </tr>
         </table>
+        <input type="hidden" id="postId" name="postId" th:value="${postId}">
         <input type="submit" id="submit" value="저장" class="btn">
     </form>
 </div>

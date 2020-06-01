@@ -27,8 +27,6 @@ dependencies {
     //providedRuntime group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: springBootVersion
 
     runtime group: 'com.h2database', name: 'h2', version: '1.4.200'
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: springBootVersion
 }
