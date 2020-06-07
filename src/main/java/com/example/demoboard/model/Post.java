@@ -5,6 +5,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.List;
 
 @Entity(name = "post")
 public class Post {
@@ -30,6 +31,9 @@ public class Post {
     @UpdateTimestamp
     @Column(name = "updatedAt", nullable = false)
     private Instant updatedAt;
+
+    @Transient
+    private List<Comment> commentList;
 
     public long getId() {
         return id;
@@ -73,5 +77,13 @@ public class Post {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public List<Comment> getCommentList() {
+        return commentList;
+    }
+
+    public void setCommentList(List<Comment> commentList) {
+        this.commentList = commentList;
     }
 }

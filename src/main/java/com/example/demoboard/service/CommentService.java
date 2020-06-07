@@ -27,4 +27,8 @@ public class CommentService {
         comment.setPostId(postId);
         return commentRepository.save(comment);
     }
+
+    public void deleteAllComment(long postId) {
+        commentRepository.deleteAllByPostId(postId);
+    }
 }

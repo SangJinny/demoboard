@@ -9,7 +9,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-@Controller
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
 @RequestMapping("/posts")
 public class PostController {
 
@@ -24,45 +28,32 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ModelAndView getPost(@PathVariable long id) {
-        ModelAndView modelAndView = new ModelAndView("postDetail");
-        modelAndView.addObject("post", postService.getPostById(id));
-        modelAndView.addObject("commentList", commentService.getCommentListByPostId(id));
-        return modelAndView;
+    public Post getPost(@PathVariable long id) {
+        return postService.getPostById(id);
     }
 
     @GetMapping
-    public ModelAndView getAllPosts() {
-        ModelAndView modelAndView = new ModelAndView("postList");
-        modelAndView.addObject("postList", postService.getAllPosts());
-        return modelAndView;
+    public Map<String, List<Post>> getAllPosts() {
+        Map<String, List<Post>> response = new HashMap<>();
+        response.put("postList", postService.getAllPosts());
+        return response;
     }
 
     @PostMapping
-    public ModelAndView postPost(@RequestParam String title,
-                                 @RequestParam String content,
-                                 @RequestParam String writer) {
-        ModelAndView modelAndView = new ModelAndView("postDetail");
-        modelAndView.addObject("post", postService.makePost(writer, title, content));
-        return modelAndView;
+    public Post postPost(@RequestBody Post post) {
+        return postService.makePost(post.getWriter(), post.getTitle(), post.getContent());
     }
 
     @DeleteMapping("/{id}")
-    public ModelAndView deletePost(@PathVariable long id) {
+    public long deletePost(@PathVariable long id) {
         postService.deletePost(id);
-        ModelAndView modelAndView = new ModelAndView("postList");
-        modelAndView.addObject("postList", postService.getAllPosts());
-        return modelAndView;
+        return id;
     }
 
 
     @PutMapping("/{id}")
-    public ModelAndView putPost(@PathVariable long id,
-                                @RequestParam String title,
-                                @RequestParam String content) {
-        postService.updatePost(id, title, content);
-        ModelAndView modelAndView = new ModelAndView("postList");
-        modelAndView.addObject("postList", postService.getAllPosts());
-        return modelAndView;
+    public Post putPost(@PathVariable long id,
+                        @RequestBody Post post) {
+        return postService.updatePost(id, post.getTitle(), post.getContent());
     }
 }

@@ -3,21 +3,31 @@ package com.example.demoboard.controller;
 import com.example.demoboard.model.Post;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class ViewController {
 
-    @GetMapping("/new-post")
+    @GetMapping("/postList.html")
+    public ModelAndView renderPostListView() {
+        return new ModelAndView("/postList");
+    }
+
+    @GetMapping("/post.html")
     public ModelAndView renderPostView() {
         return new ModelAndView("/post");
     }
 
-    @GetMapping("/new-comment")
+    @GetMapping("/postDetail.html")
+    public ModelAndView renderPostView(@RequestParam long id) {
+        return new ModelAndView("/postDetail");
+    }
+
+
+    @GetMapping("/comment.html")
     public ModelAndView renderCommentView(@RequestParam long postId) {
-        ModelAndView modelAndView = new ModelAndView("/comment");
-        modelAndView.addObject("postId", postId);
-        return modelAndView;
+        return new ModelAndView("/comment");
     }
 }

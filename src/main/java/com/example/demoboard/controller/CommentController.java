@@ -14,25 +14,21 @@ import java.util.List;
 public class CommentController {
 
     private CommentService commentService;
-    private PostService postService;
 
     @Autowired
-    public CommentController(CommentService commentService,
-                             PostService postService) {
+    public CommentController(CommentService commentService) {
         this.commentService = commentService;
-        this.postService = postService;
+    }
+
+    @GetMapping("/posts/{id}/comments")
+    public List<Comment> getAllComments(@PathVariable(name = "id") long postId) {
+        return commentService.getCommentListByPostId(postId);
     }
 
     @PostMapping("/posts/{id}/comments")
-    public ModelAndView postComment(@PathVariable(name = "id") long postId,
-                       @RequestParam String writer,
-                       @RequestParam String content) {
-        commentService.makeComment(writer, content, postId);
-
-        ModelAndView modelAndView = new ModelAndView("postDetail");
-        modelAndView.addObject("post", postService.getPostById(postId));
-        modelAndView.addObject("commentList", commentService.getCommentListByPostId(postId));
-        return modelAndView;
+    public Comment postComment(@PathVariable(name = "id") long postId,
+                       @RequestBody Comment comment) {
+        return commentService.makeComment(comment.getWriter(), comment.getContent(), postId);
     }
 
 }

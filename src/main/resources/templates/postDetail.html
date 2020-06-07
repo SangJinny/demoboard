@@ -8,101 +8,122 @@
 <body>
 <div class="container">
     <h2>게시글 상세</h2>
-    <form id="frm" method="post">
-        <table class="post_detail">
-            <colgroup>
-                <col width="15%"/>
-                <col width="35%"/>
-                <col width="15%"/>
-                <col width="35%"/>
-            </colgroup>
-            <caption>게시글 상세내용</caption>
-            <tbody>
-            <tr>
-                <th scope="row">글 번호</th>
-                <td th:text="${post.id }"></td>
-                <th scope="row">작성자</th>
-                <td th:text="${post.writer }"></td>
-            </tr>
-            <tr>
-                <th scope="row">작성일시</th>
-                <td th:text="${post.createdAt }"></td>
-                <th scope="row">수정일시</th>
-                <td th:text="${post.updatedAt }"></td>
-            </tr>
-            <tr>
-                <th scope="row">제목</th>
-                <td colspan="3"><input type="text" id="postTitle" name="title" th:value="${post.title }"/></td>
-            </tr>
-            <tr>
-                <td colspan="4" class="view_text">
-                    <textarea title="내용" id="postContent" name="content" th:text="${post.content }"></textarea>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <table class="post_detail">
-            <colgroup>
-                <col width="10%"/>
-                <col width="5%"/>
-                <col width="10%"/>
-                <col width="10%"/>
-                <col width="10%"/>
-                <col width="25%"/>
-                <col width="10%"/>
-                <col width="20%"/>
-            </colgroup>
-            <tbody>
-            <tr th:if="${#lists.size(commentList)} > 0" th:each="comment : ${commentList}">
-                <th>댓글 번호</th>
-                <td th:text="${comment.id}"></td>
-                <th>댓글 작성자</th>
-                <td th:text="${comment.writer}"></td>
-                <th>댓글 내용</th>
-                <td th:text="${comment.content}"></td>
-                <th>댓글 작성일</th>
-                <td th:text="${comment.createdAt}"></td>
-            </tr>
-            </tbody>
-        </table>
-        <input type="hidden" id="postId" name="id" th:value="${post.id }">
-    </form>
+    <table class="post_detail">
+        <colgroup>
+            <col width="15%"/>
+            <col width="35%"/>
+            <col width="15%"/>
+            <col width="35%"/>
+        </colgroup>
+        <caption>게시글 상세내용</caption>
+        <tbody id="postTbody">
+        </tbody>
+    </table>
 
+    <table class="post_detail">
+        <colgroup>
+            <col width="10%"/>
+            <col width="15%"/>
+            <col width="10%"/>
+            <col width="30%"/>
+            <col width="10%"/>
+            <col width="25%"/>
+        </colgroup>
+        <tbody id="commentListTbody">
+        <!--
+        <tr th:if="${#lists.size(commentList)} > 0" th:each="comment : ${commentList}">
+            <th>댓글 번호</th>
+            <td th:text="${comment.id}"></td>
+            <th>댓글 작성자</th>
+            <td th:text="${comment.writer}"></td>
+            <th>댓글 내용</th>
+            <td th:text="${comment.content}"></td>
+            <th>댓글 작성일</th>
+            <td th:text="${comment.createdAt}"></td>
+        </tr>
+        -->
+        </tbody>
+    </table>
     <button id="editButton" class="btn">수정하기</button>
     <button id="deleteButton" class="btn">삭제하기</button>
-    <a href="/posts" id="listButton" class="btn">목록으로</a>
-    <a href="/new-comment?postId=" th:attrappend="href=${post.id}" id="newCommentButton" class="btn">댓글쓰기</a>
+    <button id="listButton" class="btn"> <a href="/postList.html" >목록으로</a></button>
+    <button id="newCommentButton" class="btn"><a id="newCommentLink" href="/comment.html">댓글쓰기</a></button>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
+        $.ajax({
+            type: "GET",
+            url: "/posts/"+postId,
+            success: function (response) {
+                if(response) {
+                    $("#postTbody").append("<tr>" +
+                        "<th scope='row'>글 번호</th><td id='postId'>"+response.id+"</td>" +
+                        "<th scope='row'>작성자</th><td id='postWriter'>"+response.writer+"</td></tr>" +
+                        "<tr><th scope='row'>작성일<td>"+response.createdAt+"</td>" +
+                        "<th scope='row'>수정일시</th><td>"+response.updatedAt+"</td></tr>" +
+                        "<tr><th scope='row'>제목</th><td colspan='3' id='postTitle'>"+response.title+"</td></tr>" +
+                        "<tr><td colspan='4'><textarea title='내용' id='postContent'>"+response.content+"</textarea></td></tr>"
+                        );
+                    $("#newCommentLink").attr("href", "/comment.html?postId="+response.id);
+
+                    const commentList = response.commentList;
+                    if(commentList) {
+                        for(let i = 0 ; i < commentList.length ; i++) {
+                            $("#commentListTbody").append("<tr>"+
+                                "<th scope='row'>댓글 작성자</th><td>"+commentList[i].writer+"</td>"+
+                                "<th scope='row'>댓글 내용</th><td>"+commentList[i].content+"</td>"+
+                                "<th scope='row'>댓글 작성일</th><td>"+commentList[i].createdAt+"</td></tr>"
+                            )
+                        }
+
+                    }
+                } else {
+                    $("#postTbody").append("<tr>" +
+                        "<td colspan='4'>"+response.message+"</td>" +
+                        "</tr>");
+                }
+            }
+        });
+
+
         $("#editButton").on("click", function(){
-            var frm = $("#frm")[0];
-            var id = $("#postId").val();
-            var title = $("#postTitle").val();
-            var content = $("#postContent").val();
+            var id = $("#postId").text();
+            var title = $("#postTitle").text();
+            var content = $("#postContent").text();
             $.ajax({
                 type: "PUT",
                 url: "/posts/"+id,
-                data: {
+                dataType: "json",
+                contentType:"application/json; charset=utf-8",
+                data: JSON.stringify({
                     title: title,
                     content: content
-                },
+                }),
                 success: function (response) {
-                    window.location.href = '/posts';
+                    if(response.id) {
+                        alert(JSON.stringify(response));
+                    } else {
+                        alert(response.message);
+                    }
+                    window.location.href = '/postList.html';
                 }
             });
         });
 
         $("#deleteButton").on("click", function(){
-            var frm = $("#frm")[0];
-            var id = $("#postId").val();
+            var id = $("#postId").text();
             $.ajax({
                 type: "DELETE",
                 url: "/posts/"+id,
+                dataType: "json",
+                contentType:"application/json; charset=utf-8",
                 success: function (response) {
-                    window.location.href = '/posts';
+                    alert('삭제 성공');
+                    window.location.href = '/postList.html';
                 }
             });
 
